@@ -1,0 +1,169 @@
+
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kalkulator</title>
+
+<style>
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    background: #11111b;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: Arial;
+}
+
+.kalkulator {
+    width: 320px;
+    background: #24243a;
+    padding: 15px;
+    border-radius: 20px;
+}
+
+.layar {
+    width: 100%;
+    height: 100px;
+    background: #292944;
+    color: white;
+    font-size: 40px;
+    text-align: right;
+    padding: 25px 10px;
+    overflow: hidden;
+}
+
+.tombol {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+    margin-top: 15px;
+}
+
+button {
+    height: 65px;
+    border: none;
+    border-radius: 12px;
+    background: #505065;
+    color: white;
+    font-size: 23px;
+}
+
+.operator {
+    background: #ff9500;
+}
+
+.atas {
+    background: #a5a5a5;
+    color: black;
+}
+
+.nol {
+    grid-column: span 2;
+}
+</style>
+</head>
+
+<body>
+
+<div class="kalkulator">
+
+    <div class="layar" id="layar">0</div>
+
+    <div class="tombol">
+        <button class="atas" onclick="hapus()">C</button>
+        <button class="atas" onclick="tanda()">±</button>
+        <button class="atas" onclick="persen()">%</button>
+        <button class="operator" onclick="masuk('/')">÷</button>
+
+        <button onclick="masuk('7')">7</button>
+        <button onclick="masuk('8')">8</button>
+        <button onclick="masuk('9')">9</button>
+        <button class="operator" onclick="masuk('*')">×</button>
+
+        <button onclick="masuk('4')">4</button>
+        <button onclick="masuk('5')">5</button>
+        <button onclick="masuk('6')">6</button>
+        <button class="operator" onclick="masuk('-')">−</button>
+
+        <button onclick="masuk('1')">1</button>
+        <button onclick="masuk('2')">2</button>
+        <button onclick="masuk('3')">3</button>
+        <button class="operator" onclick="masuk('+')">+</button>
+
+        <button class="nol" onclick="masuk('0')">0</button>
+        <button onclick="masuk('.')">.</button>
+        <button class="operator" onclick="hitung()">=</button>
+    </div>
+
+</div>
+
+<script>
+let layar = document.getElementById("layar");
+let ekspresi = "0";
+
+function tampil() {
+    layar.innerText = ekspresi.replaceAll("*","×").replaceAll("/","÷");
+}
+
+function masuk(nilai) {
+    if (ekspresi === "Error") ekspresi = "0";
+
+    if (ekspresi === "0" && !"+-*/.".includes(nilai)) {
+        ekspresi = nilai;
+    } else {
+        ekspresi += nilai;
+    }
+
+    tampil();
+}
+
+function hapus() {
+    ekspresi = "0";
+    tampil();
+}
+
+function hitung() {
+    try {
+        if (!/^[0-9+\-*/. ]+$/.test(ekspresi)) throw Error();
+
+        let hasil = Function('"use strict"; return (' + ekspresi + ')')();
+
+        if (!Number.isFinite(hasil)) throw Error();
+
+        ekspresi = String(Number(hasil.toPrecision(12)));
+    } catch {
+        ekspresi = "Error";
+    }
+
+    tampil();
+}
+
+function persen() {
+    try {
+        let hasil = Function('"use strict"; return (' + ekspresi + ')')();
+        ekspresi = String(hasil / 100);
+        tampil();
+    } catch {
+        ekspresi = "Error";
+        tampil();
+    }
+}
+
+function tanda() {
+    if (ekspresi === "0") return;
+    ekspresi = ekspresi.startsWith("-")
+        ? ekspresi.slice(1)
+        : "-" + ekspresi;
+    tampil();
+}
+</script>
+
+</body>
+</html>
